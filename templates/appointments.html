@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Appointments</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+
+<body class="bg-light">
+
+<nav class="navbar navbar-dark bg-primary">
+    <div class="container">
+        <span class="navbar-brand">Appointment Management</span>
+        <a href="/dashboard" class="btn btn-light">Dashboard</a>
+    </div>
+</nav>
+
+<div class="container mt-5">
+
+    <div class="d-flex justify-content-between mb-3">
+        <h2>Appointment List</h2>
+
+        <a href="/book_appointment" class="btn btn-success">
+            Book Appointment
+        </a>
+    </div>
+
+    <table class="table table-bordered table-hover shadow bg-white">
+
+        <thead class="table-primary">
+            <tr>
+                <th>ID</th>
+                <th>Patient Name</th>
+                <th>Doctor Name</th>
+                <th>Appointment Date</th>
+                <th>Status</th>
+                <th>Action</th>
+            </tr>>
+        </thead>
+
+        <tbody>
+
+        {% for a in appointments %}
+            <tr>
+                <td>{{ a[0] }}</td>
+                <td>{{ a[1] }}</td>
+                <td>{{ a[2] }}</td>
+                <td>{{ a[3] }}</td>
+                <td>
+                    {% if a[4] == 'Pending' %}
+                        <span class="badge bg-warning text-dark">
+                            Pending
+                        </span>
+
+                    {% elif a[4] == 'Approved' %}
+                        <span class="badge bg-success">
+                         Approved
+                        </span>
+
+                    {% elif a[4] == 'Completed' %}
+                        <span class="badge bg-primary">
+                            Completed
+                        </span>
+
+                    {% else %}
+                        <span class="badge bg-secondary">
+                            {{ a[4] }}
+                        </span>
+                    {% endif %}
+                </td>
+
+                <td>
+                    <a href="/approve_appointment/{{ a[0] }}" class="btn btn-success btn-sm">Approve</a>
+
+                    <a href="/complete_appointment/{{ a[0] }}" class="btn btn-primary btn-sm">Complete</a>
+
+                    <a href="/delete_appointment/{{ a[0] }}"
+                    class="btn btn-danger btn-sm"
+                    onclick="return confirm('Cancel Appointment?')">
+                    Cancel
+                    </a>
+                </td>
+        </tr>
+        {% endfor %}
+
+        </tbody>
+
+    </table>
+
+</div>
+
+</body>
+</html>
