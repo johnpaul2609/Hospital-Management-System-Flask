@@ -1,5 +1,7 @@
 import sqlite3
-from flask import Flask, render_template, request, redirect, session
+from flask import Flask, render_template, request, redirect, session,send_file
+import pandas as pd
+
 
 app = Flask(__name__)
 app.secret_key = "hospital_secret"
@@ -381,6 +383,57 @@ def complete_appointment(id):
     con.close()
 
     return redirect("/appointments")
+
+@app.route("/export_patients")
+def export_patients():
+
+    con = sqlite3.connect("hospital.db")
+
+    query = """
+    SELECT *
+    FROM patients
+    """
+
+    df = pd.read_sql_query(query, con)
+
+    con.close()
+
+    file_name = "patients.xlsx"
+
+    df.to_excel(file_name, index=False)
+
+    return send_file(
+        file_name,
+        as_attachment=True
+    )
+
+@app.route("/add_sample_patients")
+def add_sample_patients():
+    con = sqlite3.connect("hospital.db")
+    cur = con.cursor()
+
+    sample_data = [
+        ("Ravi Kumar", 35, "Male", "9876543210", "Fever"),
+        ("Priya Sharma", 28, "Female", "9876543211", "Cold"),
+        ("Arun Raj", 42, "Male", "9876543212", "Diabetes"),
+        ("Meena Devi", 31, "Female", "9876543213", "Headache"),
+        ("Suresh Babu", 50, "Male", "9876543214", "Blood Pressure"),
+        ("Kavya S", 24, "Female", "9876543215", "Fever"),
+        ("Vijay Kumar", 39, "Male", "9876543216", "Asthma"),
+        ("Anitha R", 45, "Female", "9876543217", "Diabetes"),
+        ("Karthik N", 30, "Male", "9876543218", "Cold"),
+        ("Divya P", 27, "Female", "9876543219", "Fever")
+    ]
+
+    cur.executemany("""
+    INSERT INTO patients(name, age, gender, phone, disease)
+    VALUES (?, ?, ?, ?, ?)
+    """, sample_data)
+
+    con.commit()
+    con.close()
+
+    return redirect("/patients")
 
 
 init_db()
